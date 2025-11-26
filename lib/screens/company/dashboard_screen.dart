@@ -1,15 +1,18 @@
   import 'package:flutter/material.dart';
   import 'profile_screen.dart';
+  import 'package:finals/screens/welcome_screen.dart';
 
   class DashboardScreen extends StatefulWidget {
+  const DashboardScreen({super.key});
+
     @override
     _DashboardScreenState createState() => _DashboardScreenState();
   }
 
   class _DashboardScreenState extends State<DashboardScreen> {
     int _currentIndex = 0;
-    TextEditingController _personSearchController = TextEditingController();
-    TextEditingController _messageSearchController = TextEditingController();
+    final TextEditingController _personSearchController = TextEditingController();
+    final TextEditingController _messageSearchController = TextEditingController();
 
     @override
     Widget build(BuildContext context) {
@@ -34,7 +37,7 @@
             if (_currentIndex == 0) 
               Padding(
                 padding: EdgeInsets.all(16.0),
-                child: Container(
+                child: SizedBox(
                   height: 50.0,
                   child: TextField(
                     controller: _personSearchController,
@@ -57,7 +60,7 @@
             if (_currentIndex == 1) 
               Padding(
                 padding: EdgeInsets.all(16.0),
-                child: Container(
+                child: SizedBox(
                   height: 50.0,
                   child: TextField(
                     controller: _messageSearchController,
@@ -426,45 +429,49 @@
     }
 
     void _showLogoutConfirmation() {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Row(
-              children: [
-                Icon(Icons.logout, color: Color(0xFF2563EB)),
-                SizedBox(width: 8),
-                Text('Logout'),
-              ],
-            ),
-            content: Text('Are you sure you want to logout?'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('Cancel'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  // Navigate back to welcome screen
-                  Navigator.pushNamedAndRemoveUntil(
-                    context, 
-                    '/welcome', 
-                    (route) => false
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF2563EB),
-                  foregroundColor: Colors.white,
-                ),
-                child: Text('Logout'),
-              ),
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Row(
+            children: [
+              Icon(Icons.logout, color: Colors.blueAccent),
+              SizedBox(width: 8),
+              Text('Logout'),
             ],
-          );
-        },
-      );
-    }
+          ),
+          content: Text('Are you sure you want to logout?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                _logout();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blueAccent,
+                foregroundColor: Colors.white
+              ),
+              child: Text('Logout'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _logout() {
+    // Navigate back to welcome screen and clear the navigation stack
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => WelcomeScreen()),
+      (Route<dynamic> route) => false,
+    );
+  }
 
     @override
     void dispose() {

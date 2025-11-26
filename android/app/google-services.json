@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "870701801834",
+    "project_id": "tinguha-app-bb0f7",
+    "storage_bucket": "tinguha-app-bb0f7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:870701801834:android:8d6ae26d1844fc98900513",
+        "android_client_info": {
+          "package_name": "com.coopera_tambalo.tinguha"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCaGz_n3m6OcMLbAdEfBVW-tOqzN3vumSg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

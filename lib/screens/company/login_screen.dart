@@ -23,7 +23,7 @@ class CompanyLogin extends StatelessWidget {
             Center(
               child:Icon(
               Icons.business,
-              size: 200,
+              size: 150,
               color: Colors.blueAccent,
                 )
               ),

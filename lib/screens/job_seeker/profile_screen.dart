@@ -4,16 +4,17 @@ class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  _CompanyProfileScreenState createState() => _CompanyProfileScreenState();
+  _ProfileScreenState createState() => _ProfileScreenState();
 }
 
-class _CompanyProfileScreenState extends State<ProfileScreen> {
+class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Removed AppBar since we're in the dashboard navigation
       body: Column(
         children: [
-          // Company Logo Section
+          // Profile Picture Section
           Container(
             padding: EdgeInsets.all(24.0),
             child: Column(
@@ -21,17 +22,17 @@ class _CompanyProfileScreenState extends State<ProfileScreen> {
                 Stack(
                   alignment: Alignment.center,
                   children: [
-                    // Company Logo
+                    // Profile Picture
                     CircleAvatar(
                       radius: 50,
                       backgroundColor: Colors.grey[300],
                       child: Icon(
-                        Icons.business,
+                        Icons.person,
                         size: 60,
                         color: Colors.grey[600],
                       ),
                     ),
-                    // Add Logo Button
+                    // Add Photo Button
                     Positioned(
                       bottom: 0,
                       right: 0,
@@ -39,7 +40,7 @@ class _CompanyProfileScreenState extends State<ProfileScreen> {
                         width: 36,
                         height: 36,
                         decoration: BoxDecoration(
-                          color: Color(0xFF2563EB),
+                          color: Colors.blueAccent,
                           shape: BoxShape.circle,
                           border: Border.all(
                             color: Colors.white,
@@ -48,7 +49,7 @@ class _CompanyProfileScreenState extends State<ProfileScreen> {
                         ),
                         child: IconButton(
                           onPressed: () {
-                            _showAddLogoOptions();
+                            _showAddPhotoOptions();
                           },
                           icon: Icon(
                             Icons.add_a_photo,
@@ -63,7 +64,7 @@ class _CompanyProfileScreenState extends State<ProfileScreen> {
                 ),
                 SizedBox(height: 16.0),
                 Text(
-                  'Add Company Logo',
+                  'Add Profile Picture',
                   style: TextStyle(
                     fontSize: 16.0,
                     fontWeight: FontWeight.w600,
@@ -74,7 +75,7 @@ class _CompanyProfileScreenState extends State<ProfileScreen> {
             ),
           ),
 
-          // View Company Profile Button
+          // View My Profile Button
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.0),
             child: SizedBox(
@@ -82,7 +83,7 @@ class _CompanyProfileScreenState extends State<ProfileScreen> {
               height: 50.0,
               child: ElevatedButton(
                 onPressed: () {
-                  _showCompanyProfilePreview();
+                  _showProfilePreview();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
@@ -99,7 +100,7 @@ class _CompanyProfileScreenState extends State<ProfileScreen> {
                     Icon(Icons.visibility, size: 20),
                     SizedBox(width: 8.0),
                     Text(
-                      'View Company Profile',
+                      'View My Profile',
                       style: TextStyle(
                         fontSize: 16.0,
                         fontWeight: FontWeight.w600,
@@ -112,12 +113,12 @@ class _CompanyProfileScreenState extends State<ProfileScreen> {
           ),
           SizedBox(height: 16.0),
 
-          // Company Information
+          // Profile Information
           Expanded(
             child: ListView(
               padding: EdgeInsets.all(16.0),
               children: [
-                // Company Information Section
+                // Applicant Information Section
                 Card(
                   elevation: 2,
                   shape: RoundedRectangleBorder(
@@ -129,7 +130,7 @@ class _CompanyProfileScreenState extends State<ProfileScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Company Information',
+                          'Applicant Information',
                           style: TextStyle(
                             fontSize: 18.0,
                             fontWeight: FontWeight.bold,
@@ -137,17 +138,11 @@ class _CompanyProfileScreenState extends State<ProfileScreen> {
                           ),
                         ),
                         SizedBox(height: 16.0),
-                        // Company Name
-                        _buildInfoRow('Company Name:', 'ABC Company'),
+                        // Name
+                        _buildInfoRow('Name:', 'Not provided'),
                         SizedBox(height: 12.0),
-                        // Industry
-                        _buildInfoRow('Industry:', 'Technology'),
-                        SizedBox(height: 12.0),
-                        // Company Size
-                        _buildInfoRow('Company Size:', '11-50 employees'),
-                        SizedBox(height: 12.0),
-                        // Location
-                        _buildInfoRow('Location:', 'Not provided'),
+                        // Address
+                        _buildInfoRow('Address:', 'Not provided'),
                       ],
                     ),
                   ),
@@ -175,46 +170,10 @@ class _CompanyProfileScreenState extends State<ProfileScreen> {
                         ),
                         SizedBox(height: 16.0),
                         // Email
-                        _buildInfoRow('Email:', 'abccompany11@gmail.com'),
+                        _buildInfoRow('Email:', 'Not provided'),
                         SizedBox(height: 12.0),
                         // Phone Number
-                        _buildInfoRow('Phone Number:', '09312345564'),
-                        SizedBox(height: 12.0),
-                        // Website
-                        _buildInfoRow('Website:', 'Not provided'),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(height: 16.0),
-
-                // About Company Section
-                Card(
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'About Company',
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF2563EB),
-                          ),
-                        ),
-                        SizedBox(height: 16.0),
-                        Text(
-                          'No company description provided yet. Add information about your company mission, values, and culture.',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 14.0,
-                          ),
-                        ),
+                        _buildInfoRow('Phone Number:', 'Not provided'),
                       ],
                     ),
                   ),
@@ -227,8 +186,7 @@ class _CompanyProfileScreenState extends State<ProfileScreen> {
                   height: 50.0,
                   child: ElevatedButton(
                     onPressed: () {
-                      // Navigate to edit company profile screen
-                      _editCompanyProfile();
+                      // Navigate to edit profile screen
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFF2563EB),
@@ -237,7 +195,7 @@ class _CompanyProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     child: Text(
-                      'Edit Company Profile',
+                      'Edit Profile',
                       style: TextStyle(
                         fontSize: 16.0,
                         fontWeight: FontWeight.bold,
@@ -246,7 +204,6 @@ class _CompanyProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                 ),
-                SizedBox(height: 16.0),
               ],
             ),
           ),
@@ -265,7 +222,6 @@ class _CompanyProfileScreenState extends State<ProfileScreen> {
             label,
             style: TextStyle(
               fontWeight: FontWeight.w600,
-              color: Colors.grey[700],
             ),
           ),
         ),
@@ -273,8 +229,7 @@ class _CompanyProfileScreenState extends State<ProfileScreen> {
           child: Text(
             value,
             style: TextStyle(
-              color: value == 'Not provided' ? Colors.grey[500] : Colors.black87,
-              fontWeight: value == 'Not provided' ? FontWeight.normal : FontWeight.w500,
+              color: value == 'Not provided' ? Colors.grey[500] : Colors.black,
             ),
           ),
         ),
@@ -282,7 +237,7 @@ class _CompanyProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void _showAddLogoOptions() {
+  void _showAddPhotoOptions() {
     showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
@@ -298,7 +253,7 @@ class _CompanyProfileScreenState extends State<ProfileScreen> {
             children: [
               SizedBox(height: 16.0),
               Text(
-                'Add Company Logo',
+                'Add Profile Picture',
                 style: TextStyle(
                   fontSize: 18.0,
                   fontWeight: FontWeight.bold,
@@ -335,7 +290,7 @@ class _CompanyProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void _showCompanyProfilePreview() {
+  void _showProfilePreview() {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -355,7 +310,7 @@ class _CompanyProfileScreenState extends State<ProfileScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'How Candidates See Your Company',
+                    'How Others See Your Profile',
                     style: TextStyle(
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold,
@@ -371,39 +326,24 @@ class _CompanyProfileScreenState extends State<ProfileScreen> {
               ),
               SizedBox(height: 16.0),
 
-              // Company Profile Preview Content
+              // Profile Preview Content
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      // Company Logo in Preview
+                      // Profile Picture in Preview
                       CircleAvatar(
                         radius: 40,
                         backgroundColor: Colors.grey[300],
                         child: Icon(
-                          Icons.business,
+                          Icons.person,
                           size: 48,
                           color: Colors.grey[600],
                         ),
                       ),
                       SizedBox(height: 16.0),
-                      Text(
-                        'ABC Company',
-                        style: TextStyle(
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 8.0),
-                      Text(
-                        'Technology • 11-50 employees',
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                      SizedBox(height: 16.0),
 
-                      // Company Information in Preview
+                      // Applicant Information in Preview
                       Card(
                         elevation: 2,
                         shape: RoundedRectangleBorder(
@@ -415,7 +355,7 @@ class _CompanyProfileScreenState extends State<ProfileScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Company Information',
+                                'Applicant Information',
                                 style: TextStyle(
                                   fontSize: 16.0,
                                   fontWeight: FontWeight.bold,
@@ -423,11 +363,9 @@ class _CompanyProfileScreenState extends State<ProfileScreen> {
                                 ),
                               ),
                               SizedBox(height: 12.0),
-                              _buildPreviewInfoRow('Industry:', 'Technology'),
+                              _buildPreviewInfoRow('Name:', 'Not provided'),
                               SizedBox(height: 8.0),
-                              _buildPreviewInfoRow('Company Size:', '11-50 employees'),
-                              SizedBox(height: 8.0),
-                              _buildPreviewInfoRow('Location:', 'Not provided'),
+                              _buildPreviewInfoRow('Address:', 'Not provided'),
                             ],
                           ),
                         ),
@@ -454,43 +392,9 @@ class _CompanyProfileScreenState extends State<ProfileScreen> {
                                 ),
                               ),
                               SizedBox(height: 12.0),
-                              _buildPreviewInfoRow('Email:', 'abccompany11@gmail.com'),
+                              _buildPreviewInfoRow('Email:', 'Not provided'),
                               SizedBox(height: 8.0),
-                              _buildPreviewInfoRow('Phone:', '09312345564'),
-                              SizedBox(height: 8.0),
-                              _buildPreviewInfoRow('Website:', 'Not provided'),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 16.0),
-
-                      // About Company in Preview
-                      Card(
-                        elevation: 2,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.0),
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'About Company',
-                                style: TextStyle(
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF2563EB),
-                                ),
-                              ),
-                              SizedBox(height: 12.0),
-                              Text(
-                                'No company description provided yet. Add information about your company mission, values, and culture.',
-                                style: TextStyle(
-                                  color: Colors.grey[600],
-                                ),
-                              ),
+                              _buildPreviewInfoRow('Phone Number:', 'Not provided'),
                             ],
                           ),
                         ),
@@ -510,7 +414,7 @@ class _CompanyProfileScreenState extends State<ProfileScreen> {
                             SizedBox(width: 8.0),
                             Expanded(
                               child: Text(
-                                'This is how job candidates see your company profile',
+                                'This is how employers and other users see your profile',
                                 style: TextStyle(
                                   fontSize: 14.0,
                                   color: Colors.blue[800],
@@ -548,32 +452,11 @@ class _CompanyProfileScreenState extends State<ProfileScreen> {
           child: Text(
             value,
             style: TextStyle(
-              color: value == 'Not provided' ? Colors.grey[500] : Colors.black87,
+              color: value == 'Not provided' ? Colors.grey[500] : Colors.black,
             ),
           ),
         ),
       ],
-    );
-  }
-
-  void _editCompanyProfile() {
-    // Navigate to edit company profile screen
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Edit Company Profile'),
-          content: Text('Edit company profile functionality would be implemented here.'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('OK'),
-            ),
-          ],
-        );
-      },
     );
   }
 }

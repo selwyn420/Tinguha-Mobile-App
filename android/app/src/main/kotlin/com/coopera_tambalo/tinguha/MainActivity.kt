@@ -1,4 +1,4 @@
-package com.example.finals
+package com.coopera_tambalo.tinguha
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -139,13 +139,13 @@ class _CompanyProfileScreenState extends State<ProfileScreen> {
                         ),
                         SizedBox(height: 16.0),
                         // Company Name
-                        _buildInfoRow('Company Name:', 'ABC Company'),
+                        _buildInfoRow('Company Name:', 'Not provided'),
                         SizedBox(height: 12.0),
                         // Industry
-                        _buildInfoRow('Industry:', 'Technology'),
+                        _buildInfoRow('Industry:', 'Not provided'),
                         SizedBox(height: 12.0),
                         // Company Size
-                        _buildInfoRow('Company Size:', '11-50 employees'),
+                        _buildInfoRow('Company Size:', 'Not provided'),
                         SizedBox(height: 12.0),
                         // Location
                         _buildInfoRow('Location:', 'Not provided'),
@@ -176,10 +176,10 @@ class _CompanyProfileScreenState extends State<ProfileScreen> {
                         ),
                         SizedBox(height: 16.0),
                         // Email
-                        _buildInfoRow('Email:', 'abccompany11@gmail.com'),
+                        _buildInfoRow('Email:', 'Not provided'),
                         SizedBox(height: 12.0),
                         // Phone Number
-                        _buildInfoRow('Phone Number:', '09312345564'),
+                        _buildInfoRow('Phone Number:', 'Not provided'),
                         SizedBox(height: 12.0),
                         // Website
                         _buildInfoRow('Website:', 'Not provided'),
@@ -389,7 +389,7 @@ class _CompanyProfileScreenState extends State<ProfileScreen> {
                       ),
                       SizedBox(height: 16.0),
                       Text(
-                        'ABC Company',
+                        'Not provided',
                         style: TextStyle(
                           fontSize: 20.0,
                           fontWeight: FontWeight.bold,
@@ -397,7 +397,7 @@ class _CompanyProfileScreenState extends State<ProfileScreen> {
                       ),
                       SizedBox(height: 8.0),
                       Text(
-                        'Technology • 11-50 employees',
+                        'Not provided • Not provided',
                         style: TextStyle(
                           color: Colors.grey[600],
                         ),
@@ -424,9 +424,9 @@ class _CompanyProfileScreenState extends State<ProfileScreen> {
                                 ),
                               ),
                               SizedBox(height: 12.0),
-                              _buildPreviewInfoRow('Industry:', 'Technology'),
+                              _buildPreviewInfoRow('Industry:', 'Not provided'),
                               SizedBox(height: 8.0),
-                              _buildPreviewInfoRow('Company Size:', '11-50 employees'),
+                              _buildPreviewInfoRow('Company Size:', 'Not provided'),
                               SizedBox(height: 8.0),
                               _buildPreviewInfoRow('Location:', 'Not provided'),
                             ],
@@ -455,9 +455,9 @@ class _CompanyProfileScreenState extends State<ProfileScreen> {
                                 ),
                               ),
                               SizedBox(height: 12.0),
-                              _buildPreviewInfoRow('Email:', 'abccompany11@gmail.com'),
+                              _buildPreviewInfoRow('Email:', 'Not provided'),
                               SizedBox(height: 8.0),
-                              _buildPreviewInfoRow('Phone:', '09312345564'),
+                              _buildPreviewInfoRow('Phone:', 'Not provided'),
                               SizedBox(height: 8.0),
                               _buildPreviewInfoRow('Website:', 'Not provided'),
                             ],

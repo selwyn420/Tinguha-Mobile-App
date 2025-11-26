@@ -22,7 +22,7 @@ class JobSeekerLogin extends StatelessWidget {
             Center(
               child:Icon(
               Icons.person_outline_rounded,
-              size: 200,
+              size: 150,
               color: Colors.blueAccent,
                 )
               ),
