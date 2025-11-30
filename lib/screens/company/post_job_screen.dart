@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../models/job_model.dart';
 import '../../services/job_service.dart';
@@ -12,7 +14,9 @@ class PostJobScreen extends StatefulWidget {
 class _PostJobScreenState extends State<PostJobScreen> {
   final _formKey = GlobalKey<FormState>();
   final _jobService = JobService();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   bool _isLoading = false;
+  String get currentUserId => FirebaseAuth.instance.currentUser!.uid;
   
   final _jobTitleController = TextEditingController();
   final _companyNameController = TextEditingController();
@@ -28,7 +32,7 @@ class _PostJobScreenState extends State<PostJobScreen> {
     
     try {
       final job = JobModel(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        id: _firestore.collection('jobs').doc().id,
         jobTitle: _jobTitleController.text.trim(),
         companyName: _companyNameController.text.trim(),
         location: _locationController.text.trim(),
@@ -37,6 +41,7 @@ class _PostJobScreenState extends State<PostJobScreen> {
         requirements: _requirementsController.text.trim(),
         status: 'active',
         postedDate: DateTime.now(),
+        companyId: currentUserId!, 
       );
 
       await _jobService.publishJob(job);

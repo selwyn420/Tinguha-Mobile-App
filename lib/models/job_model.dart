@@ -10,7 +10,7 @@ class JobModel {
   final String requirements;
   final String status;
   final DateTime postedDate;
-  final String? companyId;
+  final String companyId;
 
   JobModel({
     required this.id,
@@ -22,12 +22,31 @@ class JobModel {
     required this.requirements,
     required this.status,
     required this.postedDate,
-    this.companyId,
+    required this.companyId,
   });
 
-  Map<String, dynamic> toJson() {
+  factory JobModel.fromFirestore(DocumentSnapshot doc) {
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    
+    // ✅ Provide defaults for ALL fields to handle null values
+    return JobModel(
+      id: doc.id,
+      jobTitle: data['jobTitle'] ?? '',
+      companyName: data['companyName'] ?? '',
+      location: data['location'] ?? '',
+      employmentType: data['employmentType'] ?? '',
+      jobDescription: data['jobDescription'] ?? '',
+      requirements: data['requirements'] ?? '',
+      status: data['status'] ?? 'active',
+      postedDate: data['postedDate'] != null 
+        ? (data['postedDate'] as Timestamp).toDate() 
+        : DateTime.now(),
+      companyId: data['companyId'] ?? '', 
+    );
+  }
+
+  Map<String, dynamic> toMap() {
     return {
-      'id': id,
       'jobTitle': jobTitle,
       'companyName': companyName,
       'location': location,
@@ -35,23 +54,8 @@ class JobModel {
       'jobDescription': jobDescription,
       'requirements': requirements,
       'status': status,
-      'postedDate': postedDate,
+      'postedDate': Timestamp.fromDate(postedDate),
       'companyId': companyId,
     };
-  }
-
-  factory JobModel.fromJson(Map<String, dynamic> json) {
-    return JobModel(
-      id: json['id'],
-      jobTitle: json['jobTitle'],
-      companyName: json['companyName'],
-      location: json['location'],
-      employmentType: json['employmentType'],
-      jobDescription: json['jobDescription'],
-      requirements: json['requirements'],
-      status: json['status'],
-      postedDate: (json['postedDate'] as Timestamp).toDate(),
-      companyId: json['companyId'],
-    );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../models/job_model.dart';
 import '../../models/message_model.dart';
@@ -25,10 +26,41 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final MessageService _messageService = MessageService();
   final ApplicationService _applicationService = ApplicationService();
   
-  final String currentUserId = "user123";
+  // ✅ Get current user ID from Firebase Auth
+  String? get currentUserId => FirebaseAuth.instance.currentUser?.uid;
+  
+  // ✅ Check if user is authenticated
+  bool get isAuthenticated => currentUserId != null;
 
   @override
   Widget build(BuildContext context) {
+    // ✅ Show loading screen if not authenticated
+    if (!isAuthenticated) {
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const CircularProgressIndicator(),
+              const SizedBox(height: 16),
+              const Text('Checking authentication...'),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => const WelcomeScreen()),
+                    (route) => false,
+                  );
+                },
+                child: const Text('Go to Login'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('WELCOME'),
@@ -114,7 +146,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
             child: StreamBuilder<List<JobModel>>(
               stream: jobService.getActiveJobs(),
               builder: (context, snapshot) {
-                if (snapshot.hasError) return Center(child: Text('Error: ${snapshot.error}'));
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                        const SizedBox(height: 16),
+                        Text('Error: ${snapshot.error}'),
+                        const SizedBox(height: 8),
+                        TextButton(
+                          onPressed: () => setState(() {}),
+                          child: const Text('Retry'),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
@@ -140,7 +189,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _buildMessagesPage() {
     return Scaffold(
       body: StreamBuilder<List<MessageModel>>(
-        stream: _messageService.getUserMessages(currentUserId),
+        stream: _messageService.getUserMessages(currentUserId!),
         builder: (context, snapshot) {
           if (snapshot.hasError) return Center(child: Text('Error: ${snapshot.error}'));
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -165,7 +214,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => NewMessageScreen(currentUserId: currentUserId),
+              builder: (context) => NewMessageScreen(currentUserId: currentUserId!),
             ),
           );
         },
@@ -177,7 +226,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Widget _buildApplicationsPage() {
     return StreamBuilder<List<ApplicationModel>>(
-      stream: _applicationService.getUserApplications(currentUserId),
+      stream: _applicationService.getUserApplications(currentUserId!),
       builder: (context, snapshot) {
         if (snapshot.hasError) return Center(child: Text('Error: ${snapshot.error}'));
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -290,7 +339,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             MaterialPageRoute(
               builder: (context) => MessageDetailScreen(
                 message: message,
-                currentUserId: currentUserId,
+                currentUserId: currentUserId!,
               ),
             ),
           );
@@ -360,7 +409,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             MaterialPageRoute(
               builder: (context) => JobDetailScreen(
                 job: job,
-                currentUserId: currentUserId,
+                currentUserId: currentUserId!,
               ),
             ),
           );
@@ -444,13 +493,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Row(
-            children: [
-              Icon(Icons.logout, color: Colors.blueAccent),
-              SizedBox(width: 8),
-              Text('Logout'),
-            ],
-          ),
+          title: const Row(children: [Icon(Icons.logout, color: Colors.blueAccent), SizedBox(width: 8), Text('Logout')]),
           content: const Text('Are you sure you want to logout?'),
           actions: [
             TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
@@ -465,12 +508,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  void _logout() {
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => const WelcomeScreen()),
-      (Route<dynamic> route) => false,
-    );
+  // ✅ Updated logout method with Firebase Auth
+  Future<void> _logout() async {
+    await FirebaseAuth.instance.signOut();
+    if (mounted) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const WelcomeScreen()),
+        (Route<dynamic> route) => false,
+      );
+    }
   }
 
   @override

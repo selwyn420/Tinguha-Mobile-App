@@ -51,7 +51,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
     setState(() => _isApplying = true);
     
     try {
-      await _applicationService.applyForJob(widget.currentUserId, widget.job);
+      await _applicationService.applyForJob(widget.currentUserId, widget.job, widget.job.companyId);
       
       if (mounted) {
         setState(() {
@@ -156,7 +156,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black,
               blurRadius: 8,
               offset: const Offset(0, -2),
             ),
