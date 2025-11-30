@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import '../../models/message_model.dart';
+import '../../services/message_service.dart';
+import '../welcome_screen.dart';
 import 'profile_screen.dart';
-import 'package:finals/screens/welcome_screen.dart';
 import 'post_job_screen.dart';
+import '../message_detail_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -14,12 +17,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
   int _currentIndex = 0;
   final TextEditingController _personSearchController = TextEditingController();
   final TextEditingController _messageSearchController = TextEditingController();
+  final MessageService _messageService = MessageService();
+  
+  // Temporary user ID - replace with actual Firebase Auth user ID
+  final String currentUserId = "company123";
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('WELCOME'), // Removed "ABC COMPANY!"
+        title: const Text('WELCOME'),
         backgroundColor: const Color(0xFF2563EB),
         foregroundColor: Colors.white,
         elevation: 0,
@@ -88,7 +95,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           // POST JOB BUTTON - Centered at bottom, only on Home tab
           if (_currentIndex == 0)
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16), // Bottom padding
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
               child: Center(
                 child: ElevatedButton(
                   onPressed: () {
@@ -131,22 +138,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
         selectedItemColor: const Color(0xFF2563EB),
         unselectedItemColor: Colors.grey,
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.message),
-            label: 'Messages',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.analytics),
-            label: 'Analytics',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.business),
-            label: 'Company',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.message), label: 'Messages'),
+          BottomNavigationBarItem(icon: Icon(Icons.analytics), label: 'Analytics'),
+          BottomNavigationBarItem(icon: Icon(Icons.business), label: 'Company'),
         ],
       ),
     );
@@ -301,43 +296,109 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
+  // Dynamic Messages Page
   Widget _buildMessagesPage() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Column(
-        children: [
-          // Messages content will go here below the search bar
-          Expanded(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.message_outlined,
-                    size: 64,
-                    color: Colors.grey[400],
-                  ),
-                  const SizedBox(height: 16.0),
-                  const Text(
-                    'No messages yet',
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  const SizedBox(height: 8.0),
-                  Text(
-                    'Your conversations with candidates will appear here',
-                    style: TextStyle(
-                      fontSize: 14.0,
-                      color: Colors.grey[500],
-                    ),
-                  ),
-                ],
+    return StreamBuilder<List<MessageModel>>(
+      stream: _messageService.getUserMessages(currentUserId),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+        
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        
+        final messages = snapshot.data ?? [];
+        
+        if (messages.isEmpty) {
+          return _buildEmptyState(Icons.message_outlined, 'No messages yet', 'Your conversations with candidates will appear here');
+        }
+        
+        return ListView.builder(
+          padding: const EdgeInsets.all(16.0),
+          itemCount: messages.length,
+          itemBuilder: (context, index) => _buildMessageCard(messages[index]),
+        );
+      },
+    );
+  }
+
+  Widget _buildMessageCard(MessageModel message) {
+    return Card(
+      elevation: 2,
+      margin: const EdgeInsets.only(bottom: 12.0),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+      child: InkWell(
+        onTap: () {
+          _messageService.markAsRead(message.id);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => MessageDetailScreen(
+                message: message,
+                currentUserId: currentUserId,
               ),
             ),
+          );
+        },
+        borderRadius: BorderRadius.circular(12.0),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              const CircleAvatar(
+                backgroundColor: Color(0xFF2563EB),
+                child: Icon(Icons.person, color: Colors.white),
+              ),
+              const SizedBox(width: 16.0),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      message.senderId == currentUserId ? 'You' : 'Job Seeker',
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.bold,
+                        color: message.isRead ? Colors.grey[700] : Colors.black,
+                      ),
+                    ),
+                    const SizedBox(height: 4.0),
+                    Text(
+                      message.content,
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        color: message.isRead ? Colors.grey[500] : Colors.grey[600],
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    _formatTimestamp(message.timestamp),
+                    style: TextStyle(fontSize: 12.0, color: Colors.grey[500]),
+                  ),
+                  if (!message.isRead)
+                    Container(
+                      margin: const EdgeInsets.only(top: 4.0),
+                      width: 8.0,
+                      height: 8.0,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF2563EB),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                ],
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -463,6 +524,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return const ProfileScreen();
   }
 
+  Widget _buildEmptyState(IconData icon, String title, String subtitle) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 64, color: Colors.grey[400]),
+          const SizedBox(height: 16.0),
+          Text(title, style: const TextStyle(fontSize: 16.0, color: Colors.grey)),
+          const SizedBox(height: 8.0),
+          Text(subtitle, style: const TextStyle(fontSize: 14.0, color: Colors.grey), textAlign: TextAlign.center),
+        ],
+      ),
+    );
+  }
+
+  String _formatTimestamp(DateTime timestamp) {
+    final now = DateTime.now();
+    final difference = now.difference(timestamp);
+    
+    if (difference.inDays > 0) {
+      return '${difference.inDays}d';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours}h';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes}m';
+    } else {
+      return 'now';
+    }
+  }
+
   void _showLogoutConfirmation() {
     showDialog(
       context: context,
@@ -477,18 +568,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
           content: const Text('Are you sure you want to logout?'),
           actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-              child: const Text('Cancel'),
-            ),
+            TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
             ElevatedButton(
               onPressed: _logout,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blueAccent,
-                foregroundColor: Colors.white
-              ),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent, foregroundColor: Colors.white),
               child: const Text('Logout'),
             ),
           ],
@@ -498,7 +581,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   void _logout() {
-    // Navigate back to welcome screen and clear the navigation stack
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => const WelcomeScreen()),
