@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../models/job_model.dart';
 import '../../models/message_model.dart';
+import '../../models/application_model.dart';
 import '../../services/job_service.dart';
 import '../../services/message_service.dart';
+import '../../services/application_service.dart';
 import '../job_detail_screen.dart';
 import '../message_detail_screen.dart';
 import '../welcome_screen.dart';
@@ -21,8 +23,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final TextEditingController _jobSearchController = TextEditingController();
   final TextEditingController _messageSearchController = TextEditingController();
   final MessageService _messageService = MessageService();
+  final ApplicationService _applicationService = ApplicationService();
   
-  // Temporary user ID - replace with actual auth user ID
   final String currentUserId = "user123";
 
   @override
@@ -44,62 +46,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
       body: Column(
         children: [
-          if (_currentIndex == 0) 
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: SizedBox(
-                height: 50.0,
-                child: TextField(
-                  controller: _jobSearchController,
-                  decoration: InputDecoration(
-                    hintText: 'Search for jobs...',
-                    prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12.0),
-                      borderSide: BorderSide.none,
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[100],
-                    contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
-                  ),
-                ),
-              ),
-            ),
-            
-          if (_currentIndex == 1) 
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: SizedBox(
-                height: 50.0,
-                child: TextField(
-                  controller: _messageSearchController,
-                  decoration: InputDecoration(
-                    hintText: 'Search messages...',
-                    prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12.0),
-                      borderSide: BorderSide.none,
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[100],
-                    contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
-                  ),
-                ),
-              ),
-            ),
-            
-          Expanded(
-            child: _buildCurrentPage(),
-          ),
+          if (_currentIndex == 0) _buildSearchBar(_jobSearchController, 'Search for jobs...'),
+          if (_currentIndex == 1) _buildSearchBar(_messageSearchController, 'Search messages...'),
+          Expanded(child: _buildCurrentPage()),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
+        onTap: (index) => setState(() => _currentIndex = index),
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.blueAccent,
         unselectedItemColor: Colors.grey,
@@ -113,18 +67,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
+  Widget _buildSearchBar(TextEditingController controller, String hint) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: SizedBox(
+        height: 50.0,
+        child: TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            hintText: hint,
+            prefixIcon: const Icon(Icons.search, color: Colors.grey),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: BorderSide.none,
+            ),
+            filled: true,
+            fillColor: Colors.grey[100],
+            contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildCurrentPage() {
     switch (_currentIndex) {
-      case 0:
-        return _buildHomePage();
-      case 1:
-        return _buildMessagesPage();
-      case 2:
-        return _buildApplicationsPage();
-      case 3:
-        return const ProfileScreen();
-      default:
-        return _buildHomePage();
+      case 0: return _buildHomePage();
+      case 1: return _buildMessagesPage();
+      case 2: return _buildApplicationsPage();
+      case 3: return const ProfileScreen();
+      default: return _buildHomePage();
     }
   }
 
@@ -138,13 +110,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
         children: [
           const Text('RECOMMENDED', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Color(0xFF2563EB))),
           const SizedBox(height: 16.0),
-          
           Expanded(
             child: StreamBuilder<List<JobModel>>(
               stream: jobService.getActiveJobs(),
               builder: (context, snapshot) {
                 if (snapshot.hasError) return Center(child: Text('Error: ${snapshot.error}'));
-                if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
                 
                 final jobs = snapshot.data ?? [];
                 
@@ -170,7 +143,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
         stream: _messageService.getUserMessages(currentUserId),
         builder: (context, snapshot) {
           if (snapshot.hasError) return Center(child: Text('Error: ${snapshot.error}'));
-          if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
           
           final messages = snapshot.data ?? [];
           
@@ -190,13 +165,115 @@ class _DashboardScreenState extends State<DashboardScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => NewMessageScreen(currentUserId: currentUserId), // ✅ FIXED
+              builder: (context) => NewMessageScreen(currentUserId: currentUserId),
             ),
           );
         },
         backgroundColor: Colors.blueAccent,
         child: const Icon(Icons.add, color: Colors.white),
       ),
+    );
+  }
+
+  Widget _buildApplicationsPage() {
+    return StreamBuilder<List<ApplicationModel>>(
+      stream: _applicationService.getUserApplications(currentUserId),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) return Center(child: Text('Error: ${snapshot.error}'));
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        
+        final applications = snapshot.data ?? [];
+        
+        if (applications.isEmpty) {
+          return _buildEmptyState(
+            Icons.work_outline,
+            'No applications yet',
+            'Apply for jobs to see them here',
+          );
+        }
+        
+        return ListView.builder(
+          padding: const EdgeInsets.all(16.0),
+          itemCount: applications.length,
+          itemBuilder: (context, index) => _buildApplicationCard(applications[index]),
+        );
+      },
+    );
+  }
+
+  Widget _buildApplicationCard(ApplicationModel application) {
+    return Card(
+      elevation: 2,
+      margin: const EdgeInsets.only(bottom: 12.0),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              application.jobTitle ?? 'Unknown Job',
+              style: const TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF2563EB),
+              ),
+            ),
+            const SizedBox(height: 8.0),
+            Text(
+              application.companyName ?? 'Unknown Company',
+              style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey[700],
+              ),
+            ),
+            const SizedBox(height: 12.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildStatusChip(application.status),
+                Text(
+                  _formatTimestamp(application.appliedDate),
+                  style: TextStyle(fontSize: 14.0, color: Colors.grey[500]),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatusChip(String status) {
+    Color chipColor;
+    String statusText;
+    
+    switch (status) {
+      case 'pending':
+        chipColor = Colors.orange;
+        statusText = 'Pending';
+        break;
+      case 'accepted':
+        chipColor = Colors.green;
+        statusText = 'Accepted';
+        break;
+      case 'rejected':
+        chipColor = Colors.red;
+        statusText = 'Rejected';
+        break;
+      default:
+        chipColor = Colors.grey;
+        statusText = 'Unknown';
+    }
+    
+    return Chip(
+      label: Text(statusText, style: const TextStyle(color: Colors.white, fontSize: 12)),
+      backgroundColor: chipColor,
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
     );
   }
 
@@ -223,10 +300,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           padding: const EdgeInsets.all(16.0),
           child: Row(
             children: [
-              CircleAvatar(
-                backgroundColor: Colors.blueAccent,
-                child: Icon(Icons.person, color: Colors.white),
-              ),
+              CircleAvatar(backgroundColor: Colors.blueAccent, child: Icon(Icons.person, color: Colors.white)),
               const SizedBox(width: 16.0),
               Expanded(
                 child: Column(
@@ -256,20 +330,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(
-                    _formatTimestamp(message.timestamp),
-                    style: TextStyle(fontSize: 12.0, color: Colors.grey[500]),
-                  ),
-                  if (!message.isRead)
+                  Text(_formatTimestamp(message.timestamp), style: TextStyle(fontSize: 12.0, color: Colors.grey[500])),
+                  if (!message.isRead) ...[
+                    const SizedBox(height: 4.0),
                     Container(
-                      margin: const EdgeInsets.only(top: 4.0),
                       width: 8.0,
                       height: 8.0,
-                      decoration: BoxDecoration(
-                        color: Colors.blueAccent,
-                        shape: BoxShape.circle,
-                      ),
+                      decoration: const BoxDecoration(color: Colors.blueAccent, shape: BoxShape.circle),
                     ),
+                  ],
                 ],
               ),
             ],
@@ -277,51 +346,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
       ),
     );
-  }
-
-  Widget _buildApplicationsPage() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.work_outline, size: 64, color: Colors.grey[400]),
-          const SizedBox(height: 16.0),
-          const Text('Applications Page', style: TextStyle(fontSize: 18.0, color: Colors.grey)),
-          const SizedBox(height: 8.0),
-          const Text('Your job applications will appear here', style: TextStyle(fontSize: 14.0, color: Colors.grey)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEmptyState(IconData icon, String title, String subtitle) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 64, color: Colors.grey[400]),
-          const SizedBox(height: 16.0),
-          Text(title, style: const TextStyle(fontSize: 16.0, color: Colors.grey)),
-          const SizedBox(height: 8.0),
-          Text(subtitle, style: const TextStyle(fontSize: 14.0, color: Colors.grey), textAlign: TextAlign.center),
-        ],
-      ),
-    );
-  }
-
-  String _formatTimestamp(DateTime timestamp) {
-    final now = DateTime.now();
-    final difference = now.difference(timestamp);
-    
-    if (difference.inDays > 0) {
-      return '${difference.inDays}d';
-    } else if (difference.inHours > 0) {
-      return '${difference.inHours}h';
-    } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes}m';
-    } else {
-      return 'now';
-    }
   }
 
   Widget _buildJobCard(JobModel job) {
@@ -334,7 +358,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => JobDetailScreen(job: job),
+              builder: (context) => JobDetailScreen(
+                job: job,
+                currentUserId: currentUserId,
+              ),
             ),
           );
         },
@@ -385,6 +412,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
       ),
     );
+  }
+
+  Widget _buildEmptyState(IconData icon, String title, String subtitle) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 64, color: Colors.grey[400]),
+          const SizedBox(height: 16.0),
+          Text(title, style: const TextStyle(fontSize: 16.0, color: Colors.grey)),
+          const SizedBox(height: 8.0),
+          Text(subtitle, style: const TextStyle(fontSize: 14.0, color: Colors.grey), textAlign: TextAlign.center),
+        ],
+      ),
+    );
+  }
+
+  String _formatTimestamp(DateTime timestamp) {
+    final now = DateTime.now();
+    final difference = now.difference(timestamp);
+    
+    if (difference.inDays > 0) return '${difference.inDays}d';
+    if (difference.inHours > 0) return '${difference.inHours}h';
+    if (difference.inMinutes > 0) return '${difference.inMinutes}m';
+    return 'now';
   }
 
   void _showLogoutConfirmation() {

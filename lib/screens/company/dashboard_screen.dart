@@ -5,6 +5,7 @@ import '../welcome_screen.dart';
 import 'profile_screen.dart';
 import 'post_job_screen.dart';
 import '../message_detail_screen.dart';
+import '../new_message_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -296,31 +297,39 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  // Dynamic Messages Page
   Widget _buildMessagesPage() {
-    return StreamBuilder<List<MessageModel>>(
-      stream: _messageService.getUserMessages(currentUserId),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        }
-        
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        
-        final messages = snapshot.data ?? [];
-        
-        if (messages.isEmpty) {
-          return _buildEmptyState(Icons.message_outlined, 'No messages yet', 'Your conversations with candidates will appear here');
-        }
-        
-        return ListView.builder(
-          padding: const EdgeInsets.all(16.0),
-          itemCount: messages.length,
-          itemBuilder: (context, index) => _buildMessageCard(messages[index]),
+    return Scaffold(
+      body: StreamBuilder<List<MessageModel>>(
+        stream: _messageService.getUserMessages(currentUserId),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) return Center(child: Text('Error: ${snapshot.error}'));
+          if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
+          
+          final messages = snapshot.data ?? [];
+          
+          if (messages.isEmpty) {
+            return _buildEmptyState(Icons.message_outlined, 'No messages yet', 'Tap + to start a conversation');
+          }
+          
+          return ListView.builder(
+            padding: const EdgeInsets.all(16.0),
+            itemCount: messages.length,
+            itemBuilder: (context, index) => _buildMessageCard(messages[index]),
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => NewMessageScreen(currentUserId: currentUserId),
+          ),
         );
       },
+      backgroundColor: Colors.blueAccent,
+      child: const Icon(Icons.add, color: Colors.white),
+    ),
     );
   }
 
@@ -347,8 +356,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
           padding: const EdgeInsets.all(16.0),
           child: Row(
             children: [
-              const CircleAvatar(
-                backgroundColor: Color(0xFF2563EB),
+              CircleAvatar(
+                backgroundColor: Colors.blueAccent,
                 child: Icon(Icons.person, color: Colors.white),
               ),
               const SizedBox(width: 16.0),
@@ -357,7 +366,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      message.senderId == currentUserId ? 'You' : 'Job Seeker',
+                      message.senderId == currentUserId ? 'You' : 'Company/User',
                       style: TextStyle(
                         fontSize: 16.0,
                         fontWeight: FontWeight.bold,
@@ -390,7 +399,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       width: 8.0,
                       height: 8.0,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF2563EB),
+                        color: Colors.blueAccent,
                         shape: BoxShape.circle,
                       ),
                     ),
