@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../models/job_model.dart';
-import '../../models/message_model.dart';
 import '../../models/application_model.dart';
 import '../../services/job_service.dart';
 import '../../services/message_service.dart';
@@ -11,6 +10,7 @@ import '../message_detail_screen.dart';
 import '../welcome_screen.dart';
 import 'profile_screen.dart';
 import '../new_message_screen.dart';
+import '../../models/conversation_model.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -26,15 +26,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final MessageService _messageService = MessageService();
   final ApplicationService _applicationService = ApplicationService();
   
-  // ✅ Get current user ID from Firebase Auth
+  // Get current user ID from Firebase Auth
   String? get currentUserId => FirebaseAuth.instance.currentUser?.uid;
   
-  // ✅ Check if user is authenticated
+  // Check if user is authenticated
   bool get isAuthenticated => currentUserId != null;
 
   @override
   Widget build(BuildContext context) {
-    // ✅ Show loading screen if not authenticated
+    // Show loading screen if not authenticated
     if (!isAuthenticated) {
       return Scaffold(
         body: Center(
@@ -187,42 +187,156 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildMessagesPage() {
-    return Scaffold(
-      body: StreamBuilder<List<MessageModel>>(
-        stream: _messageService.getUserMessages(currentUserId!),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) return Center(child: Text('Error: ${snapshot.error}'));
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          
-          final messages = snapshot.data ?? [];
-          
-          if (messages.isEmpty) {
-            return _buildEmptyState(Icons.message_outlined, 'No messages yet', 'Tap + to start a conversation');
-          }
-          
-          return ListView.builder(
-            padding: const EdgeInsets.all(16.0),
-            itemCount: messages.length,
-            itemBuilder: (context, index) => _buildMessageCard(messages[index]),
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => NewMessageScreen(currentUserId: currentUserId!),
+  return Scaffold(
+    body: StreamBuilder<List<ConversationModel>>(
+      stream: _messageService.getConversations(currentUserId!),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) return Center(child: Text('Error: ${snapshot.error}'));
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        
+        final conversations = snapshot.data ?? [];
+        
+        if (conversations.isEmpty) {
+          return _buildEmptyState(Icons.message_outlined, 'No messages yet', 'Tap + to start a conversation');
+        }
+        
+        return ListView.builder(
+          padding: const EdgeInsets.all(16.0),
+          itemCount: conversations.length,
+          itemBuilder: (context, index) => _buildConversationCard(conversations[index]),
+        );
+      },
+    ),
+    floatingActionButton: FloatingActionButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => NewMessageScreen(currentUserId: currentUserId!),
+          ),
+        );
+      },
+      backgroundColor: Colors.blueAccent,
+      child: const Icon(Icons.add, color: Colors.white),
+    ),
+  );
+}
+
+Widget _buildConversationCard(ConversationModel conversation) {
+  return Card(
+    elevation: 2,
+    margin: const EdgeInsets.only(bottom: 12.0),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+    child: InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MessageDetailScreen(
+              otherUserId: conversation.otherUserId,
+              otherUserName: conversation.otherUserName,
+              currentUserId: currentUserId!,
             ),
-          );
-        },
-        backgroundColor: Colors.blueAccent,
-        child: const Icon(Icons.add, color: Colors.white),
+          ),
+        );
+      },
+      borderRadius: BorderRadius.circular(12.0),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            CircleAvatar(
+              backgroundColor: Colors.blueAccent,
+              radius: 24,
+              child: Text(
+                conversation.otherUserName[0].toUpperCase(),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
+            ),
+            const SizedBox(width: 16.0),
+            
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    conversation.otherUserName,
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      fontWeight: conversation.isRead ? FontWeight.w600 : FontWeight.bold,
+                      color: conversation.isRead ? Colors.grey[800] : Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 4.0),
+                  Text(
+                    conversation.lastMessage,
+                    style: TextStyle(
+                      fontSize: 14.0,
+                      fontWeight: conversation.isRead ? FontWeight.normal : FontWeight.w500,
+                      color: conversation.isRead ? Colors.grey[600] : Colors.grey[800],
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  _formatTimestamp(conversation.timestamp),
+                  style: TextStyle(
+                    fontSize: 12.0,
+                    fontWeight: conversation.isRead ? FontWeight.normal : FontWeight.bold,
+                    color: conversation.isRead ? Colors.grey[500] : Colors.blueAccent,
+                  ),
+                ),
+                if (conversation.unreadCount > 0) ...[
+                  const SizedBox(height: 8.0),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.blueAccent,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    constraints: const BoxConstraints(minWidth: 24),
+                    child: Text(
+                      '${conversation.unreadCount}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ],
+        ),
       ),
-    );
-  }
+    ),
+  );
+}
+
+String _formatTimestamp(DateTime timestamp) {
+  final now = DateTime.now();
+  final difference = now.difference(timestamp);
+  
+  if (difference.inDays > 0) return '${difference.inDays}d';
+  if (difference.inHours > 0) return '${difference.inHours}h';
+  if (difference.inMinutes > 0) return '${difference.inMinutes}m';
+  return 'now';
+}
 
   Widget _buildApplicationsPage() {
     return StreamBuilder<List<ApplicationModel>>(
@@ -326,78 +440,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildMessageCard(MessageModel message) {
-    return Card(
-      elevation: 2,
-      margin: const EdgeInsets.only(bottom: 12.0),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-      child: InkWell(
-        onTap: () {
-          _messageService.markAsRead(message.id);
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => MessageDetailScreen(
-                message: message,
-                currentUserId: currentUserId!,
-              ),
-            ),
-          );
-        },
-        borderRadius: BorderRadius.circular(12.0),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            children: [
-              CircleAvatar(backgroundColor: Colors.blueAccent, child: Icon(Icons.person, color: Colors.white)),
-              const SizedBox(width: 16.0),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      message.senderId == currentUserId ? 'You' : 'Company/User',
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.bold,
-                        color: message.isRead ? Colors.grey[700] : Colors.black,
-                      ),
-                    ),
-                    const SizedBox(height: 4.0),
-                    Text(
-                      message.content,
-                      style: TextStyle(
-                        fontSize: 14.0,
-                        color: message.isRead ? Colors.grey[500] : Colors.grey[600],
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(_formatTimestamp(message.timestamp), style: TextStyle(fontSize: 12.0, color: Colors.grey[500])),
-                  if (!message.isRead) ...[
-                    const SizedBox(height: 4.0),
-                    Container(
-                      width: 8.0,
-                      height: 8.0,
-                      decoration: const BoxDecoration(color: Colors.blueAccent, shape: BoxShape.circle),
-                    ),
-                  ],
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildJobCard(JobModel job) {
+Widget _buildJobCard(JobModel job) {
     return Card(
       elevation: 2,
       margin: const EdgeInsets.only(bottom: 16.0),
@@ -478,16 +521,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  String _formatTimestamp(DateTime timestamp) {
-    final now = DateTime.now();
-    final difference = now.difference(timestamp);
-    
-    if (difference.inDays > 0) return '${difference.inDays}d';
-    if (difference.inHours > 0) return '${difference.inHours}h';
-    if (difference.inMinutes > 0) return '${difference.inMinutes}m';
-    return 'now';
-  }
-
   void _showLogoutConfirmation() {
     showDialog(
       context: context,
@@ -508,7 +541,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  // ✅ Updated logout method with Firebase Auth
   Future<void> _logout() async {
     await FirebaseAuth.instance.signOut();
     if (mounted) {

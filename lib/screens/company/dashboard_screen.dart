@@ -1,8 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../../models/message_model.dart';
+import '../../models/conversation_model.dart';
 import '../../services/message_service.dart';
-import '../../services/job_service.dart';
 import '../welcome_screen.dart';
 import 'profile_screen.dart';
 import 'post_job_screen.dart';
@@ -207,52 +206,150 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildMessagesPage() {
-    return StreamBuilder<List<MessageModel>>(
-      stream: _messageService.getUserMessages(currentUserId!),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) return Center(child: Text('Error: ${snapshot.error}'));
-        if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
-        final messages = snapshot.data ?? [];
-        if (messages.isEmpty) return _buildEmptyState(Icons.message_outlined, 'No messages yet', 'Tap + to start a conversation');
-        return ListView.builder(
-          padding: const EdgeInsets.all(16.0),
-          itemCount: messages.length,
-          itemBuilder: (context, index) => _buildMessageCard(messages[index]),
-        );
-      },
-    );
-  }
-
-  Widget _buildMessageCard(MessageModel message) {
-    return Card(
-      elevation: 2,
-      margin: const EdgeInsets.only(bottom: 12.0),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-      child: InkWell(
-        onTap: () {
-          _messageService.markAsRead(message.id);
-          Navigator.push(context, MaterialPageRoute(builder: (context) => MessageDetailScreen(message: message, currentUserId: currentUserId!)));
+    return Scaffold(
+      body: StreamBuilder<List<ConversationModel>>(
+        stream: _messageService.getConversations(currentUserId!),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) return Center(child: Text('Error: ${snapshot.error}'));
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          
+          final conversations = snapshot.data ?? [];
+          
+          if (conversations.isEmpty) {
+            return _buildEmptyState(Icons.message_outlined, 'No messages yet', 'Tap + to start a conversation');
+          }
+          
+          return ListView.builder(
+            padding: const EdgeInsets.all(16.0),
+            itemCount: conversations.length,
+            itemBuilder: (context, index) => _buildConversationCard(conversations[index]),
+          );
         },
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            children: [
-              CircleAvatar(backgroundColor: Colors.blueAccent, child: const Icon(Icons.person, color: Colors.white)),
-              const SizedBox(width: 16.0),
-              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(message.senderId == currentUserId ? 'You' : 'Company/User', style: const TextStyle(fontWeight: FontWeight.bold)),
-                Text(message.content, maxLines: 1, overflow: TextOverflow.ellipsis),
-              ])),
-              Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                Text(_formatTimestamp(message.timestamp), style: TextStyle(fontSize: 12.0, color: Colors.grey[500])),
-                if (!message.isRead) Container(width: 8.0, height: 8.0, decoration: const BoxDecoration(color: Colors.blueAccent, shape: BoxShape.circle)),
-              ]),
-            ],
-          ),
-        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => NewMessageScreen(currentUserId: currentUserId!),
+            ),
+          );
+        },
+        backgroundColor: const Color(0xFF2563EB),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }
+
+  Widget _buildConversationCard(ConversationModel conversation) {
+  return Card(
+    elevation: 2,
+    margin: const EdgeInsets.only(bottom: 12.0),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+    child: InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MessageDetailScreen(
+              otherUserId: conversation.otherUserId,
+              otherUserName: conversation.otherUserName,
+              currentUserId: currentUserId!,
+            ),
+          ),
+        );
+      },
+      borderRadius: BorderRadius.circular(12.0),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            // Avatar with other person's initial
+            CircleAvatar(
+              backgroundColor: const Color(0xFF2563EB),
+              radius: 24,
+              child: Text(
+                conversation.otherUserName[0].toUpperCase(),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
+            ),
+            const SizedBox(width: 16.0),
+            
+            // Message preview
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    conversation.otherUserName,
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      fontWeight: conversation.isRead ? FontWeight.w600 : FontWeight.bold,
+                      color: conversation.isRead ? Colors.grey[800] : Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 4.0),
+                  Text(
+                    conversation.lastMessage,
+                    style: TextStyle(
+                      fontSize: 14.0,
+                      fontWeight: conversation.isRead ? FontWeight.normal : FontWeight.w500,
+                      color: conversation.isRead ? Colors.grey[600] : Colors.grey[800],
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            
+            // Timestamp and unread badge
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  _formatTimestamp(conversation.timestamp),
+                  style: TextStyle(
+                    fontSize: 12.0,
+                    fontWeight: conversation.isRead ? FontWeight.normal : FontWeight.bold,
+                    color: conversation.isRead ? Colors.grey[500] : const Color(0xFF2563EB),
+                  ),
+                ),
+                if (conversation.unreadCount > 0) ...[
+                  const SizedBox(height: 8.0),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2563EB),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    constraints: const BoxConstraints(minWidth: 24),
+                    child: Text(
+                      '${conversation.unreadCount}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
 
   Widget _buildAnalyticsPage() {
     return const Center(child: Text('Analytics', style: TextStyle(fontSize: 24.0)));

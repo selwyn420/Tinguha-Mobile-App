@@ -1,7 +1,7 @@
-// lib/screens/compose_message_screen.dart
 import 'package:flutter/material.dart';
 import '../../models/message_model.dart';
 import '../../services/message_service.dart';
+import '../../services/user_service.dart';
 
 class ComposeMessageScreen extends StatefulWidget {
   final String recipientId;
@@ -22,19 +22,37 @@ class ComposeMessageScreen extends StatefulWidget {
 class _ComposeMessageScreenState extends State<ComposeMessageScreen> {
   final TextEditingController _messageController = TextEditingController();
   final MessageService _messageService = MessageService();
+  final UserService _userService = UserService();
   bool _isSending = false;
+  String _currentUserName = 'User';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCurrentUserName();
+  }
+
+  Future<void> _loadCurrentUserName() async {
+    try {
+      final name = await _userService.getCurrentUserName(widget.currentUserId);
+      if (mounted) {
+        setState(() => _currentUserName = name);
+      }
+    } catch (e) {
+      print('Error loading user name: $e');
+    }
+  }
 
   Future<void> _sendMessage() async {
     if (_messageController.text.trim().isEmpty) return;
 
     setState(() => _isSending = true);
-
     try {
       final message = MessageModel(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         senderId: widget.currentUserId,
         receiverId: widget.recipientId,
-        senderName: 'You',
+        senderName: _currentUserName,
         receiverName: widget.recipientName,
         content: _messageController.text.trim(),
         timestamp: DateTime.now(),
@@ -42,19 +60,9 @@ class _ComposeMessageScreenState extends State<ComposeMessageScreen> {
       );
 
       await _messageService.sendMessage(message);
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Message sent!')),
-        );
-        Navigator.pop(context);
-      }
+      if (mounted) Navigator.pop(context);
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to send: $e')),
-        );
-      }
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed: $e')));
     } finally {
       if (mounted) setState(() => _isSending = false);
     }

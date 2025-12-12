@@ -110,7 +110,7 @@ class _PostJobScreenState extends State<PostJobScreen> {
             ),
             Container(
               padding: const EdgeInsets.all(16.0),
-              decoration: BoxDecoration(color: Colors.white, boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 8, offset: const Offset(0, -2))]),
+              decoration: BoxDecoration(color: Colors.white, boxShadow: [BoxShadow(color: Colors.black, blurRadius: 8, offset: const Offset(0, -2))]),
               child: Row(
                 children: [
                   Expanded(child: OutlinedButton(onPressed: _saveDraft, style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)), side: const BorderSide(color: Color(0xFF2563EB))), child: const Text('Save Draft', style: TextStyle(fontSize: 16, color: Color(0xFF2563EB))))),
