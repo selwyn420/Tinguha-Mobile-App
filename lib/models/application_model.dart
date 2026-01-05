@@ -4,7 +4,7 @@ class ApplicationModel {
   final String id;
   final String userId;
   final String jobId;
-  final String? companyId; 
+  final String? companyId;
   final String status;
   final DateTime appliedDate;
   final String? jobTitle;
@@ -22,7 +22,11 @@ class ApplicationModel {
   });
 
   factory ApplicationModel.fromFirestore(DocumentSnapshot doc) {
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    final data = doc.data() as Map<String, dynamic>?;
+    if (data == null) {
+      throw Exception('Missing document data');
+    }
+    
     return ApplicationModel(
       id: doc.id,
       userId: data['userId'] ?? '',

@@ -1,12 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/application_model.dart';
+import '../models/job_analytics_model.dart';
 import '../models/job_model.dart';
 
 class ApplicationService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final String collection = 'applications';
-
-  // ==================== USER METHODS ====================
 
   Stream<List<ApplicationModel>> getUserApplications(String userId) {
     return _firestore
@@ -55,8 +54,6 @@ class ApplicationService {
         .map((snapshot) => snapshot.docs.length);
   }
 
-  // ==================== COMPANY METHODS ====================
-
   Stream<List<ApplicationModel>> getApplicationsByCompany(String companyId) {
     return _firestore
         .collection(collection)
@@ -75,6 +72,32 @@ class ApplicationService {
         .snapshots()
         .map((snapshot) => 
             snapshot.docs.map((doc) => ApplicationModel.fromFirestore(doc)).toList());
+  }
+
+  /// Get analytics data for company's job postings
+  Stream<List<JobAnalyticsModel>> getCompanyAnalytics(String companyId) {
+    // First, get all jobs for the company
+    final jobsStream = _firestore
+        .collection('jobs')
+        .where('companyId', isEqualTo: companyId)
+        .snapshots();
+
+    return jobsStream.asyncMap((jobsSnapshot) async {
+      final jobs = jobsSnapshot.docs;
+      
+      // For each job, get its applications
+      List<JobAnalyticsModel> analytics = [];
+      for (var jobDoc in jobs) {
+        final applicationsSnapshot = await _firestore
+            .collection(collection)
+            .where('jobId', isEqualTo: jobDoc.id)
+            .get();
+        
+        analytics.add(JobAnalyticsModel.fromFirestore(jobDoc, applicationsSnapshot.docs));
+      }
+      
+      return analytics;
+    });
   }
 
   Future<void> updateApplicationStatus(String applicationId, String status) async {

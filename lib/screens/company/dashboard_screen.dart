@@ -1,3 +1,4 @@
+import 'package:finals/screens/company/analytics_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../models/conversation_model.dart';
@@ -352,7 +353,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 }
 
   Widget _buildAnalyticsPage() {
-    return const Center(child: Text('Analytics', style: TextStyle(fontSize: 24.0)));
+    return const CompanyAnalyticsScreen();
   }
 
   Widget _buildCompanyPage() {
