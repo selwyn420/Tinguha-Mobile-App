@@ -51,7 +51,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('WELCOME'),
-        backgroundColor: const Color(0xFF2563EB),
+        backgroundColor: Colors.blueAccent,
         foregroundColor: Colors.white,
         elevation: 0,
         automaticallyImplyLeading: false,
@@ -80,7 +80,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2563EB),
+                    backgroundColor: Colors.blueAccent,
                     padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
                     elevation: 4,
@@ -98,7 +98,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: const Color(0xFF2563EB),
+        selectedItemColor: Colors.blueAccent,
         unselectedItemColor: Colors.grey,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
@@ -131,7 +131,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       case 0: return _buildHomePage();
       case 1: return _buildMessagesPage();
       case 2: return _buildAnalyticsPage();
-      case 3: return const ProfileScreen();
+      case 3: return _buildCompanyPage();
       default: return _buildHomePage();
     }
   }
@@ -193,7 +193,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         padding: const EdgeInsets.all(24.0),
         child: Row(
           children: [
-            Icon(icon, size: 40, color: const Color(0xFF2563EB)),
+            Icon(icon, size: 40, color: Colors.blueAccent),
             const SizedBox(width: 16.0),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(title, style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.w600)),
@@ -238,7 +238,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
           );
         },
-        backgroundColor: const Color(0xFF2563EB),
+        backgroundColor: Colors.blueAccent,
         child: const Icon(Icons.add, color: Colors.white),
       ),
     );
@@ -269,7 +269,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           children: [
             // Avatar with other person's initial
             CircleAvatar(
-              backgroundColor: const Color(0xFF2563EB),
+              backgroundColor: Colors.blueAccent,
               radius: 24,
               child: Text(
                 conversation.otherUserName[0].toUpperCase(),
@@ -320,7 +320,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   style: TextStyle(
                     fontSize: 12.0,
                     fontWeight: conversation.isRead ? FontWeight.normal : FontWeight.bold,
-                    color: conversation.isRead ? Colors.grey[500] : const Color(0xFF2563EB),
+                    color: conversation.isRead ? Colors.grey[500] : Colors.blueAccent,
                   ),
                 ),
                 if (conversation.unreadCount > 0) ...[
@@ -328,7 +328,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF2563EB),
+                      color: Colors.blueAccent,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     constraints: const BoxConstraints(minWidth: 24),

@@ -16,7 +16,7 @@ class _CompanyCandidatesScreenState extends State<CompanyCandidatesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Job Candidates'), backgroundColor: const Color(0xFF2563EB), foregroundColor: Colors.white),
+      appBar: AppBar(title: const Text('Job Candidates'), backgroundColor: Colors.blueAccent, foregroundColor: Colors.white),
       body: StreamBuilder<List<ApplicationModel>>(
         stream: _applicationService.getApplicationsByCompany(widget.companyId),
         builder: (context, snapshot) {
@@ -40,7 +40,7 @@ class _CompanyCandidatesScreenState extends State<CompanyCandidatesScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(application.jobTitle ?? 'Unknown Job', style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold, color: Color(0xFF2563EB))),
+            Text(application.jobTitle ?? 'Unknown Job', style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
             const SizedBox(height: 8.0),
             Row(
               children: [

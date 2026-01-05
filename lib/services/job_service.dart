@@ -15,7 +15,7 @@ class JobService {
             snapshot.docs.map((doc) => JobModel.fromFirestore(doc)).toList());
   }
 
-  // NEW: Get jobs by company
+  // Get jobs by company
   Stream<List<JobModel>> getJobsByCompany(String companyId) {
     return _firestore
         .collection(collection)

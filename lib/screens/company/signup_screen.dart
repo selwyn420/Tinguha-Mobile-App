@@ -90,7 +90,7 @@ class _CompanySignupState extends State<CompanySignup> {
     return Scaffold(
       appBar: AppBar(
         title: Text('SIGN UP'),
-        backgroundColor: Color(0xFF2563EB),
+        backgroundColor: Colors.blueAccent,
         foregroundColor: Colors.white,
         elevation: 0,
       ),
@@ -182,7 +182,7 @@ class _CompanySignupState extends State<CompanySignup> {
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _signUp,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF2563EB),
+                    backgroundColor: Colors.blueAccent,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8.0),
                     ),
@@ -228,7 +228,7 @@ class _CompanySignupState extends State<CompanySignup> {
                         TextSpan(
                           text: 'Log in',
                           style: TextStyle(
-                            color: Color(0xFF2563EB),
+                            color: Colors.blueAccent,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -237,7 +237,7 @@ class _CompanySignupState extends State<CompanySignup> {
                   ),
                 ),
               ),
-              SizedBox(height: 20.0), // ← Added extra bottom padding for safety
+              SizedBox(height: 20.0),
             ],
           ),
         ),

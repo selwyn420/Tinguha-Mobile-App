@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class UserService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  /// Search across both collections (case-insensitive, single-letter enabled)
+  /// Search across both collections
   Future<List<Map<String, String>>> searchUsersByName(String query) async {
     if (query.trim().isEmpty) return [];
     
@@ -100,4 +100,26 @@ class UserService {
       return 'User'; // Error fallback
     }
   }
+
+/// Get complete job seeker profile
+Future<Map<String, dynamic>?> getJobSeekerProfile(String userId) async {
+  try {
+    final doc = await _firestore.collection('job_seekers').doc(userId).get();
+    return doc.exists ? doc.data() : null;
+  } catch (e) {
+    print('Error fetching job seeker profile: $e');
+    return null;
+  }
+}
+
+/// Get complete company profile
+Future<Map<String, dynamic>?> getCompanyProfile(String userId) async {
+  try {
+    final doc = await _firestore.collection('companies').doc(userId).get();
+    return doc.exists ? doc.data() : null;
+  } catch (e) {
+    print('Error fetching company profile: $e');
+    return null;
+  }
+}
 }

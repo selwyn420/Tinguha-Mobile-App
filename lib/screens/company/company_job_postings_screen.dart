@@ -17,7 +17,7 @@ class _CompanyJobPostingsScreenState extends State<CompanyJobPostingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Active Job Postings'), backgroundColor: const Color(0xFF2563EB), foregroundColor: Colors.white),
+      appBar: AppBar(title: const Text('Active Job Postings'), backgroundColor: Colors.blueAccent, foregroundColor: Colors.white),
       body: StreamBuilder<List<JobModel>>(
         stream: _jobService.getJobsByCompany(widget.companyId),
         builder: (context, snapshot) {
@@ -30,7 +30,7 @@ class _CompanyJobPostingsScreenState extends State<CompanyJobPostingsScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const PostJobScreen())),
-        backgroundColor: const Color(0xFF2563EB),
+        backgroundColor: Colors.blueAccent,
         child: const Icon(Icons.add, color: Colors.white),
       ),
     );
@@ -46,7 +46,7 @@ class _CompanyJobPostingsScreenState extends State<CompanyJobPostingsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(job.jobTitle, style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold, color: Color(0xFF2563EB))),
+            Text(job.jobTitle, style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
             const SizedBox(height: 8.0),
             Row(
               children: [

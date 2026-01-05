@@ -44,15 +44,15 @@ class ConversationModel {
       }
     }
 
-    // Get the true last message (earliest timestamp among sorted)
+    // Get the true last message 
     final lastMsg = messages.reduce((a, b) => a.timestamp.isAfter(b.timestamp) ? a : b);
-    
-    // Build preview: "You: message" if current user sent it, otherwise just the message
+
+    // "You: message" if current user sent it, otherwise just the message
     String lastMessageText;
     if (lastMsg.senderId == currentUserId) {
       lastMessageText = 'You: ${lastMsg.content}';
     } else {
-      lastMessageText = lastMsg.content; // No prefix needed - other user's name is the title
+      lastMessageText = lastMsg.content;
     }
 
     // Count unread messages to current user

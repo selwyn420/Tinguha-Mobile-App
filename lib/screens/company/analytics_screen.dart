@@ -24,7 +24,7 @@ class _CompanyAnalyticsScreenState extends State<CompanyAnalyticsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Job Analytics'),
-        backgroundColor: const Color(0xFF2563EB),
+        backgroundColor: Colors.blueAccent,
         foregroundColor: Colors.white,
         elevation: 0,
       ),
@@ -139,7 +139,7 @@ class _CompanyAnalyticsScreenState extends State<CompanyAnalyticsScreen> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              Icon(icon, color: const Color(0xFF2563EB), size: 32),
+              Icon(icon, color: Colors.blueAccent, size: 32),
               const SizedBox(height: 8),
               Text(value, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
               Text(title, style: TextStyle(fontSize: 12, color: Colors.grey[600]), textAlign: TextAlign.center),
@@ -156,7 +156,7 @@ class _CompanyAnalyticsScreenState extends State<CompanyAnalyticsScreen> {
       style: const TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.bold,
-        color: Color(0xFF2563EB),
+        color: Colors.blueAccent,
       ),
     );
   }
@@ -170,7 +170,7 @@ class _CompanyAnalyticsScreenState extends State<CompanyAnalyticsScreen> {
         barRods: [
           BarChartRodData(
             toY: job.totalApplications.toDouble(),
-            color: const Color(0xFF2563EB),
+            color: Colors.blueAccent,
             width: 16,
             borderRadius: BorderRadius.circular(4),
           ),

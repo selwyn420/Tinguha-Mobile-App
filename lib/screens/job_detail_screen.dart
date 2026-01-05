@@ -78,7 +78,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Job Details'),
-        backgroundColor: const Color(0xFF2563EB),
+        backgroundColor: Colors.blueAccent,
         foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
@@ -91,7 +91,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
               style: const TextStyle(
                 fontSize: 24.0,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF2563EB),
+                color: Colors.blueAccent,
               ),
             ),
             const SizedBox(height: 16.0),
@@ -129,7 +129,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
             
             const Text(
               'Job Description',
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold, color: Color(0xFF2563EB)),
+              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold, color: Colors.blueAccent),
             ),
             const SizedBox(height: 8.0),
             Text(
@@ -140,7 +140,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
             
             const Text(
               'Requirements',
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold, color: Color(0xFF2563EB)),
+              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold, color: Colors.blueAccent),
             ),
             const SizedBox(height: 8.0),
             Text(
@@ -167,7 +167,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
             : ElevatedButton(
                 onPressed: _hasApplied || _isApplying ? null : _applyForJob,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _hasApplied ? Colors.grey : const Color(0xFF2563EB),
+                  backgroundColor: _hasApplied ? Colors.grey : Colors.blueAccent,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
                 ),

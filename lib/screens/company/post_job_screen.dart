@@ -73,7 +73,7 @@ class _PostJobScreenState extends State<PostJobScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Post New Job'),
-        backgroundColor: const Color(0xFF2563EB),
+        backgroundColor: Colors.blueAccent,
         foregroundColor: Colors.white,
         elevation: 0,
       ),
@@ -88,7 +88,7 @@ class _PostJobScreenState extends State<PostJobScreen> {
                   children: [
                     TextFormField(controller: _jobTitleController, decoration: InputDecoration(labelText: 'Job Title *', border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.0)), filled: true, fillColor: Colors.grey[50]), validator: (value) => value?.isEmpty ?? true ? 'Required' : null),
                     const SizedBox(height: 20),
-                    const Text('Basic Information', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF2563EB))),
+                    const Text('Basic Information', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
                     const SizedBox(height: 12),
                     TextFormField(controller: _companyNameController, decoration: InputDecoration(labelText: 'Company Name *', border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.0)), filled: true, fillColor: Colors.grey[50]), validator: (value) => value?.isEmpty ?? true ? 'Required' : null),
                     const SizedBox(height: 12),
@@ -96,11 +96,11 @@ class _PostJobScreenState extends State<PostJobScreen> {
                     const SizedBox(height: 12),
                     TextFormField(controller: _employmentTypeController, decoration: InputDecoration(labelText: 'Employment Type *', border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.0)), filled: true, fillColor: Colors.grey[50]), validator: (value) => value?.isEmpty ?? true ? 'Required' : null),
                     const SizedBox(height: 20),
-                    const Text('Job Description', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF2563EB))),
+                    const Text('Job Description', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
                     const SizedBox(height: 12),
                     TextFormField(controller: _jobDescriptionController, maxLines: 8, decoration: InputDecoration(hintText: 'Describe the role...', border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.0)), filled: true, fillColor: Colors.grey[50]), validator: (value) => value?.isEmpty ?? true ? 'Required' : null),
                     const SizedBox(height: 20),
-                    const Text('Requirements', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF2563EB))),
+                    const Text('Requirements', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
                     const SizedBox(height: 12),
                     TextFormField(controller: _requirementsController, maxLines: 8, decoration: InputDecoration(hintText: 'List qualifications...', border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.0)), filled: true, fillColor: Colors.grey[50]), validator: (value) => value?.isEmpty ?? true ? 'Required' : null),
                     const SizedBox(height: 20),
@@ -113,9 +113,9 @@ class _PostJobScreenState extends State<PostJobScreen> {
               decoration: BoxDecoration(color: Colors.white, boxShadow: [BoxShadow(color: Colors.black, blurRadius: 8, offset: const Offset(0, -2))]),
               child: Row(
                 children: [
-                  Expanded(child: OutlinedButton(onPressed: _saveDraft, style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)), side: const BorderSide(color: Color(0xFF2563EB))), child: const Text('Save Draft', style: TextStyle(fontSize: 16, color: Color(0xFF2563EB))))),
+                  Expanded(child: OutlinedButton(onPressed: _saveDraft, style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)), side: const BorderSide(color: Colors.blueAccent)), child: const Text('Save Draft', style: TextStyle(fontSize: 16, color: Colors.blueAccent)))),
                   const SizedBox(width: 16),
-                  Expanded(child: ElevatedButton(onPressed: _isLoading ? null : _publishJob, style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2563EB), padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0))), child: _isLoading ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)) : const Text('Publish Job', style: TextStyle(fontSize: 16, color: Colors.white)))),
+                  Expanded(child: ElevatedButton(onPressed: _isLoading ? null : _publishJob, style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent, padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0))), child: _isLoading ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)) : const Text('Publish Job', style: TextStyle(fontSize: 16, color: Colors.white)))),
                 ],
               ),
             ),

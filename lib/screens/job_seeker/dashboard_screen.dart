@@ -127,7 +127,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       case 0: return _buildHomePage();
       case 1: return _buildMessagesPage();
       case 2: return _buildApplicationsPage();
-      case 3: return const ProfileScreen();
+      case 3: return _buildJobSeekerPage();
       default: return _buildHomePage();
     }
   }
@@ -140,7 +140,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('RECOMMENDED', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Color(0xFF2563EB))),
+          const Text('RECOMMENDED', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
           const SizedBox(height: 16.0),
           Expanded(
             child: StreamBuilder<List<JobModel>>(
@@ -381,7 +381,7 @@ String _formatTimestamp(DateTime timestamp) {
               style: const TextStyle(
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF2563EB),
+                color: Colors.blueAccent,
               ),
             ),
             const SizedBox(height: 8.0),
@@ -468,7 +468,7 @@ Widget _buildJobCard(JobModel job) {
                 style: const TextStyle(
                   fontSize: 18.0,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF2563EB),
+                  color: Colors.blueAccent,
                 ),
               ),
               const SizedBox(height: 8.0),
@@ -519,6 +519,10 @@ Widget _buildJobCard(JobModel job) {
         ],
       ),
     );
+  }
+
+Widget _buildJobSeekerPage() {
+    return const ProfileScreen();
   }
 
   void _showLogoutConfirmation() {

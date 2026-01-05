@@ -135,7 +135,7 @@ class _CompanyLoginState extends State<CompanyLogin> {
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.email),
                   ),
-                  keyboardType: TextInputType.emailAddress,
+                  keyboardType: TextInputType.emailAddress,// ✅ Auto-populated from Auth
                   textInputAction: TextInputAction.next,
                   validator: (value) {
                     if (value == null || value.isEmpty) return 'Email is required';

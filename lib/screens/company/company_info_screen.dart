@@ -78,7 +78,7 @@ class _CompanyInfoScreenState extends State<CompanyInfoScreen> {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) throw Exception('User not logged in');
 
-      // ✅ Get email from Firebase Auth instead of controller
+      // Get email from Firebase Auth instead of controller
       final String email = user.email ?? '';
 
       await FirebaseFirestore.instance
@@ -86,7 +86,7 @@ class _CompanyInfoScreenState extends State<CompanyInfoScreen> {
           .doc(user.uid)
           .set({
         'company_name': _companyNameController.text.trim(),
-        'email': email, // ✅ Auto-populated from Auth
+        'email': email, 
         'phone_number': _phoneController.text.trim(),
         'address': _addressController.text.trim(),
         'about_company': _aboutController.text.trim(),
@@ -123,7 +123,7 @@ class _CompanyInfoScreenState extends State<CompanyInfoScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Company Information'),
-        backgroundColor: Color(0xFF2563EB),
+        backgroundColor: Colors.blueAccent,
         foregroundColor: Colors.white,
         elevation: 0,
       ),
@@ -138,7 +138,7 @@ class _CompanyInfoScreenState extends State<CompanyInfoScreen> {
                 style: TextStyle(
                   fontSize: 20.0,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF2563EB),
+                  color: Colors.blueAccent,
                 ),
               ),
               SizedBox(height: 24.0),
@@ -169,7 +169,7 @@ class _CompanyInfoScreenState extends State<CompanyInfoScreen> {
               ),
               SizedBox(height: 16.0),
 
-              // Phone Number (Email removed, auto-saved from Auth)
+              // Phone Number 
               TextFormField(
                 controller: _phoneController,
                 decoration: InputDecoration(
@@ -234,7 +234,7 @@ class _CompanyInfoScreenState extends State<CompanyInfoScreen> {
                         style: TextStyle(
                           fontSize: 16.0,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF2563EB),
+                          color: Colors.blueAccent,
                         ),
                       ),
                       SizedBox(height: 12.0),
@@ -285,7 +285,7 @@ class _CompanyInfoScreenState extends State<CompanyInfoScreen> {
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _saveCompanyInfo,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF2563EB),
+                    backgroundColor: Colors.blueAccent,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8.0),
                     ),

@@ -28,7 +28,7 @@ class JobModel {
   factory JobModel.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     
-    // ✅ Provide defaults for ALL fields to handle null values
+    // Provide defaults for ALL fields to handle null values
     return JobModel(
       id: doc.id,
       jobTitle: data['jobTitle'] ?? '',
