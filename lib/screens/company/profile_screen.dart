@@ -243,20 +243,6 @@ class _CompanyProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 SizedBox(height: 16.0),
-
-                // Logout Button
-                SizedBox(
-                  width: double.infinity,
-                  height: 50.0,
-                  child: ElevatedButton(
-                    onPressed: _logout,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      foregroundColor: Colors.white,
-                    ),
-                    child: Text('Logout', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
-                  ),
-                ),
               ],
             ),
           ),
